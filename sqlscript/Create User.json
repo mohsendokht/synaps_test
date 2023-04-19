@@ -1,0 +1,17 @@
+{
+	"name": "Create User",
+	"properties": {
+		"content": {
+			"query": "--In the master database\n--Use master;\n--CREATE LOGIN [arsalan@mohsendokhthotmail.onmicrosoft.com] FROM EXTERNAL PROVIDER;\n--GO;\n--Use SalesDB;\n--GO;\n--CREATE USER arsalan FROM LOGIN [arsalan@mohsendokhthotmail.onmicrosoft.com];\n--ALTER ROLE db_owner ADD member arsalan; -- Type USER name from step 2\n-- DROP USER arsalan;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SalesDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
