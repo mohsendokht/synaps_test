@@ -1,0 +1,26 @@
+{
+	"name": "relationship-kormjomohy",
+	"properties": {
+		"Name": "relationship-kormjomohy",
+		"EntityType": "RELATIONSHIP",
+		"Namespace": {
+			"DatabaseName": "RetailDB"
+		},
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"FromTableName": "Customer",
+		"ToTableName": "SalesOrder",
+		"ColumnRelationshipInformations": [
+			{
+				"FromColumnName": "CustomerId",
+				"ToColumnName": "CustomerId"
+			}
+		],
+		"RelationshipType": 0,
+		"PublishStatus": "PUBLISHED",
+		"ObjectVersion": 1,
+		"ObjectId": "8194182d-4ed5-4030-bbd9-823ae0e745f4"
+	},
+	"type": "RELATIONSHIP"
+}

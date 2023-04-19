@@ -1,0 +1,21 @@
+{
+	"name": "CREATE usp_GetYearlySales",
+	"properties": {
+		"description": "CREATE PROCEDURE usp_GetYearlySales",
+		"folder": {
+			"name": "SalesDB"
+		},
+		"content": {
+			"query": " \n CREATE PROCEDURE usp_GetYearlySales\n AS\n BEGIN\n     -- drop existing table\n     IF EXISTS (\n             SELECT * FROM sys.external_tables\n             WHERE name = 'YearlySalesTotals'\n         )\n         DROP EXTERNAL TABLE YearlySalesTotals\n     -- create external table\n     CREATE EXTERNAL TABLE YearlySalesTotals\n     WITH (\n             LOCATION = 'YearlySales/',\n             DATA_SOURCE = sales_data,\n             FILE_FORMAT = ParquetFormat\n         )\n     AS\n     SELECT YEAR(OrderDate) AS CalendarYear,\n             SUM(Quantity) AS ItemsSold,\n             ROUND(SUM(UnitPrice) - SUM(TaxAmount), 2) AS NetRevenue\n     FROM\n         OPENROWSET(\n             BULK 'CSV/*.csv',\n             DATA_SOURCE = 'sales_data',\n             FORMAT = 'CSV',\n             PARSER_VERSION = '2.0',\n             HEADER_ROW = TRUE\n         ) AS orders\n     GROUP BY YEAR(OrderDate)\n END",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SalesDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
