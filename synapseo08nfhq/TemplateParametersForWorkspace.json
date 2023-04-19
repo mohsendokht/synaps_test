@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "synapseo08nfhq"
+		},
+		"synapseo08nfhq-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapseo08nfhq.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"synapseo08nfhq-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://datalakeo08nfhq.dfs.core.windows.net"
+		}
+	}
+}
