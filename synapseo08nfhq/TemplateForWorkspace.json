@@ -314,6 +314,358 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sparko08nfhq",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "a4169415-ac3a-4132-aec7-ded08afc1c3f"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/6d6952d8-fe9a-4474-a65d-85ab24c4ed06/resourceGroups/dp000-o08nfhq/providers/Microsoft.Synapse/workspaces/synapseo08nfhq/bigDataPools/sparko08nfhq",
+						"name": "sparko08nfhq",
+						"type": "Spark",
+						"endpoint": "https://synapseo08nfhq.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparko08nfhq",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://files@datalakeo08nfhq.dfs.core.windows.net/SalesDB/CSV/2019.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							" %%pyspark\r\n",
+							" from pyspark.sql.types import *\r\n",
+							" from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							" orderSchema = StructType([\r\n",
+							"     StructField(\"SalesOrderNumber\", StringType()),\r\n",
+							"     StructField(\"SalesOrderLineNumber\", IntegerType()),\r\n",
+							"     StructField(\"OrderDate\", DateType()),\r\n",
+							"     StructField(\"CustomerName\", StringType()),\r\n",
+							"     StructField(\"Email\", StringType()),\r\n",
+							"     StructField(\"Item\", StringType()),\r\n",
+							"     StructField(\"Quantity\", IntegerType()),\r\n",
+							"     StructField(\"UnitPrice\", FloatType()),\r\n",
+							"     StructField(\"Tax\", FloatType())\r\n",
+							"     ])\r\n",
+							"\r\n",
+							" df = spark.read.load('abfss://files@datalakeo08nfhq.dfs.core.windows.net/SalesDB/CSV/*.csv', format='csv', schema=orderSchema, header=True)\r\n",
+							" display(df.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							" customers = df['CustomerName', 'Email']\r\n",
+							" print(customers.count())\r\n",
+							" print(customers.distinct().count())\r\n",
+							" display(customers.distinct())"
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							" customers = df.select(\"CustomerName\", \"Email\").where(df['Item']=='Road-250 Red, 52')\r\n",
+							" print(customers.count())\r\n",
+							" print(customers.distinct().count())\r\n",
+							" display(customers.distinct())"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							" productSales = df.select(\"Item\", \"Quantity\").groupBy(\"Item\").sum()\r\n",
+							" display(productSales)"
+						],
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							" from matplotlib import pyplot as plt\r\n",
+							"\r\n",
+							" df.createOrReplaceTempView(\"salesorders\")\r\n",
+							"\r\n",
+							" spark_df = spark.sql(\"SELECT * FROM salesorders\")\r\n",
+							" #display(spark_df)\r\n",
+							"\r\n",
+							" sqlQuery = \"SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \\\r\n",
+							"                 SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \\\r\n",
+							"             FROM salesorders \\\r\n",
+							"             GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\\r\n",
+							"             ORDER BY OrderYear\"\r\n",
+							" df_spark = spark.sql(sqlQuery)\r\n",
+							" df_spark.show()\r\n",
+							" \r\n",
+							"\r\n",
+							" # matplotlib requires a Pandas dataframe, not a Spark one\r\n",
+							" df_sales = df_spark.toPandas()\r\n",
+							"\r\n",
+							" # Create a bar plot of revenue by year\r\n",
+							" plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])\r\n",
+							"\r\n",
+							" # Display the plot\r\n",
+							" plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 17
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							" # Clear the plot area\r\n",
+							" plt.clf()\r\n",
+							"\r\n",
+							" # Create a bar plot of revenue by year\r\n",
+							" plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')\r\n",
+							"\r\n",
+							" # Customize the chart\r\n",
+							" plt.title('Revenue by Year')\r\n",
+							" plt.xlabel('Year')\r\n",
+							" plt.ylabel('Revenue')\r\n",
+							" plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)\r\n",
+							" plt.xticks(rotation=45)\r\n",
+							"\r\n",
+							" # Show the figure\r\n",
+							" plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 18
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							" # Clear the plot area\r\n",
+							" plt.clf()\r\n",
+							"\r\n",
+							" # Create a Figure\r\n",
+							" fig = plt.figure(figsize=(8,3))\r\n",
+							"\r\n",
+							" # Create a bar plot of revenue by year\r\n",
+							" plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')\r\n",
+							"\r\n",
+							" # Customize the chart\r\n",
+							" plt.title('Revenue by Year')\r\n",
+							" plt.xlabel('Year')\r\n",
+							" plt.ylabel('Revenue')\r\n",
+							" plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)\r\n",
+							" plt.xticks(rotation=45)\r\n",
+							"\r\n",
+							" # Show the figure\r\n",
+							" plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 19
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							" # Clear the plot area\r\n",
+							" plt.clf()\r\n",
+							"\r\n",
+							" # Create a figure for 2 subplots (1 row, 2 columns)\r\n",
+							" fig, ax = plt.subplots(1, 2, figsize = (10,4))\r\n",
+							"\r\n",
+							" # Create a bar plot of revenue by year on the first axis\r\n",
+							" ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')\r\n",
+							" ax[0].set_title('Revenue by Year')\r\n",
+							"\r\n",
+							" # Create a pie chart of yearly order counts on the second axis\r\n",
+							" yearly_counts = df_sales['OrderYear'].value_counts()\r\n",
+							" ax[1].pie(yearly_counts)\r\n",
+							" ax[1].set_title('Orders per Year')\r\n",
+							" ax[1].legend(yearly_counts.keys().tolist())\r\n",
+							"\r\n",
+							" # Add a title to the Figure\r\n",
+							" fig.suptitle('Sales Data')\r\n",
+							"\r\n",
+							" # Show the figure\r\n",
+							" plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 20
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/RetailDB')]",
 			"type": "Microsoft.Synapse/workspaces/databases",
 			"apiVersion": "2019-06-01-preview",
@@ -969,9 +1321,9 @@
 					"delayInMinutes": 5
 				},
 				"autoScale": {
-					"enabled": true,
-					"maxNodeCount": 4,
-					"minNodeCount": 3
+					"enabled": false,
+					"maxNodeCount": 0,
+					"minNodeCount": 0
 				},
 				"nodeCount": 3,
 				"nodeSize": "Small",
@@ -979,6 +1331,18 @@
 				"sparkVersion": "3.1",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "centralus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SqlPool01')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
